@@ -14,17 +14,19 @@ public class Tests {
     protected Steps steps = new Steps();
 
     @BeforeEach
-    public void option(){
+    public void option() {
         Configuration.timeout = 6000;
         Configuration.startMaximized = true;
     }
 
     @Test
-    public void yandexMarketForTask13(){
-        open("https://yandex.ru/");
-        YandexBeforeMarket yandexBeforeMarket = new YandexBeforeMarket();
-        steps.goMarket(yandexBeforeMarket);
-        MarketPage marketPage = new MarketPage();
-        steps.goLaptops(marketPage);
+    public void yandexMarketForTask13() {
+        open("https://yandex.ru/", YandexBeforeMarket.class)
+                .goMarket()
+                .goToLaptop()
+                .setAllFiltersLaptops("10000", "30000")
+                .setRangeToTwelve()
+                .checkResults()
+                .searchFirstOne();
     }
 }

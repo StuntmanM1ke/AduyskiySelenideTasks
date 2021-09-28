@@ -5,6 +5,9 @@ import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import com.codeborne.selenide.commands.WaitUntil;
+import com.codeborne.selenide.conditions.Text;
+import io.qameta.allure.Step;
+import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
@@ -14,20 +17,17 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$$x;
 import static com.codeborne.selenide.Selenide.$x;
 
-public class MarketPage {
-//    public boolean isPageLoaded() {
-//        return false;
-//    }
-
-
+public class MarketPage  extends BasePage{
     public MarketPage() {
     }
 
-
-    private WebElement computerFilter;
+    SelenideElement firstInListBefore;
+    private SelenideElement searchResultsMarker = $x("//button[@class='vLDMf']");
     private WebElement electronics;
     private WebElement priceFieldFrom;
     private WebElement priceFieldTo;
@@ -45,50 +45,52 @@ public class MarketPage {
         return results;
     }
 
-
-
-
-    public void goToLaptop() {
+    @Step ("Перейти в ноутбуки")
+    public MarketPage goToLaptop() {
         $x("//span[contains(text(),'Компьютеры')]").click();
         SelenideElement laptops = $x("//a[@href=\"/catalog--noutbuki/54544/list?hid=91013\"]");
         laptops.shouldBe(Condition.visible).click();
+        return this;
     }
 
-   /* public void goToSmartphones() {
-        electronics.click();
-        smartPhones = driver.findElement(By.xpath("//a[contains(text(),'Смартфоны') and @class='_2qvOO _2x2zB _9qbcy']"));
+    public void goToSmartphones() {
+        $x("//span[contains(text(),'Электроника')]").click();
+        // smartPhones = driver.findElement(By.xpath("//a[contains(text(),'Смартфоны') and @class='_2qvOO _2x2zB _9qbcy']"));
         smartPhones.click();
     }
-
-    public void setAllFiltersLaptops() {
-        setPrice("10000", "30000");
-        hpPoint = driver.findElement(By.xpath("//span[@class = '_1o8_r' and contains(text(),'HP')]"));
-        lenovoPoint = driver.findElement(By.xpath("//span[@class = '_1o8_r' and contains(text(),'Lenovo')]"));
-        hpPoint.click();
-        lenovoPoint.click();
+    @Step("Задание фильтров {priceFrom}, {priceTo}")
+    public MarketPage setAllFiltersLaptops(String priceFrom, String priceTo) {
+        $x("//span[@class = '_1o8_r' and contains(text(),'HP')]").click();
+        $x("//span[@class = '_1o8_r' and contains(text(),'Lenovo')]").click();
+        $x("//*[@id = 'glpricefrom']").sendKeys(priceFrom);
+        $x("//*[@id = 'glpriceto']").sendKeys(priceTo);
+        return this;
     }
 
-    public void setPrice(String from, String to) {
-        priceFieldFrom = driver.findElement(By.xpath("//*[@id = 'glpricefrom']"));
-        priceFieldTo = driver.findElement(By.xpath("//*[@id = 'glpriceto']"));
-        priceFieldFrom.sendKeys(from);
-        priceFieldTo.sendKeys(to);
+    @Step("Установка количества показываемых элементов на страницу")
+    public MarketPage setRangeToTwelve() {
+        $x("//button[@class='vLDMf']").shouldBe(Condition.visible).click();
+        $x("//button[@class='_1KpjX _35Paz']").click();
+        return this;
     }
 
-    public void setRangeToTwelve() {
-        showSmthg = driver.findElement(By.xpath("//button[@class='vLDMf']"));
-        showSmthg.click();
-        showTwelve = driver.findElement(By.xpath("//button[@class='_1KpjX _35Paz']"));
-        showTwelve.click();
+    @Step("Проверка количества отображаемых элементов")
+    public MarketPage checkResults() {
+        searchResultsMarker.shouldBe(visible).click();
+        Assertions.assertEquals(12, getResults().size());
+        return this;
     }
 
-    public void searchFirstOne() {
-        searchField = driver.findElement(By.xpath("//input[@id='header-search']"));
-        searchButton = driver.findElement(By.xpath("//span[contains(text(),'Найти')]"));
-        searchField.sendKeys(results.get(0).getText());
-        searchButton.click();
+    @Step("Поиск по первому элементу и сравнение результатов с запросом")
+    public MarketPage searchFirstOne() {
+        firstInListBefore = getResults().get(0);
+        $x("//input[@id='header-search']").sendKeys(firstInListBefore.getText());
+        $x("//span[contains(text(),'Найти')]").click();
+        Assertions.assertEquals(getResults().get(0).getText(), firstInListBefore.getText());
+        return this;
     }
 
+    /*
     public void setBrandFilter (String brandName) throws InterruptedException {
         WebElement showAll = driver.findElement(By.xpath("//*[@class ='_1KpjX _2Wg9r']"));
         showAll.click();
