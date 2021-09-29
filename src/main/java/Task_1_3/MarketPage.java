@@ -23,22 +23,13 @@ import static com.codeborne.selenide.Selenide.$$x;
 import static com.codeborne.selenide.Selenide.$x;
 
 public class MarketPage  extends BasePage{
-    public MarketPage() {
-    }
+
 
     SelenideElement firstInListBefore;
     private SelenideElement searchResultsMarker = $x("//button[@class='vLDMf']");
-    private WebElement electronics;
-    private WebElement priceFieldFrom;
-    private WebElement priceFieldTo;
-    private WebElement smartPhones;
-    private WebElement laptopFilter;
-    private WebElement hpPoint;
-    private WebElement lenovoPoint;
-    private WebElement showSmthg;
-    private WebElement showTwelve;
-    private WebElement searchField;
-    private WebElement searchButton;
+
+    public MarketPage() {
+    }
 
     public ElementsCollection getResults() {
         ElementsCollection results = $$x("//h3");
@@ -56,7 +47,7 @@ public class MarketPage  extends BasePage{
     public void goToSmartphones() {
         $x("//span[contains(text(),'Электроника')]").click();
         // smartPhones = driver.findElement(By.xpath("//a[contains(text(),'Смартфоны') and @class='_2qvOO _2x2zB _9qbcy']"));
-        smartPhones.click();
+
     }
     @Step("Задание фильтров {priceFrom}, {priceTo}")
     public MarketPage setAllFiltersLaptops(String priceFrom, String priceTo) {
